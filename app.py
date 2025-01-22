@@ -18,6 +18,7 @@ app = FastAPI()
 
 origins=["*"]
 
+#CORS handling is one of the first things if different parts of projects are deployed separately.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -26,17 +27,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+#the purpose of this get request is to ensure server is up and running
 @app.get('/')
 def read_data():
     print("request recieved")
-    return {"message": "hello world"}
+    return {"message": "This is a simple GET request to the server which works as a sanity check that the API is up and running. If somehow you landed up here but want to explore our entire project make a post request to '/test' url." 
+    }
 
-# @app.post('/predict')
-# def predict_air(data: dict):
-#     print(data)
-#     print(data["CO"])
-#     return {"CO" : data["CO"]}
 
+#the actual request which accepts the data, calculates the prediction and returns it.
 @app.post('/test')
 async def predict_air(data: Test):
     # print(data)
@@ -46,16 +45,16 @@ async def predict_air(data: Test):
     SO2 = newdata["SO2"]
     CO = newdata["CO"]
     Proximity_to_Industrial_Areas = newdata["Proximity_to_Industrial_Areas"]
-    print(Temperature, NO2, SO2, CO, Proximity_to_Industrial_Areas)
-    print(classifier.predict([[Temperature, NO2, SO2, CO, Proximity_to_Industrial_Areas]]))
+    #print(Temperature, NO2, SO2, CO, Proximity_to_Industrial_Areas)
+    #print(classifier.predict([[Temperature, NO2, SO2, CO, Proximity_to_Industrial_Areas]]))
     answer = classifier.predict([[Temperature, NO2, SO2, CO, Proximity_to_Industrial_Areas]])
-    print(answer, "  the predictions is")
+    #print(answer, "  the predictions is")
+
+    #we configured our model labels as 0-Poor, 1-Good
     if answer == 0:
         return "Poor"
     else:
         return "Good"
-    # print(data["CO"])
-    # return 0
 
 
 if __name__ == "main":
